@@ -23,6 +23,13 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 				rg = self.regex_compiler("\\/\\*", "\\*\\/", "\\/\\/")
 			if ext == "py":
 				rg = self.regex_compiler(None, None, "#")
+			if ext == "rb":
+				rg = self.regex_compiler("=start", "=end", "#")
+			if ext == "html":
+				rg = self.regex_compiler("<!--", "-->", None)
+			if ext == "css":
+				rg = self.regex_compiler("\\/\\*", "\\*\\/", None)
+
 
 
 			#"\\/\\*.*\\*\\/\\n\\s*|(\\/\\*(.*\\n)+.*\\*\\/)|\\/\\/.+\\n\\s*"
