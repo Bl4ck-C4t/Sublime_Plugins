@@ -9,17 +9,16 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 			name = self.view.file_name()
 			name = path.split(name)
 			ext = name[1].split(".")[1]
-			if ext == "c":
-				single = "//"
-				multi_start = "/*"
-				multi_end = "*/"
+			if ext in ["c", "cpp", "csharp"]:
+				single = "\\/\\/"
+				multi_start = "\\/\\*"
+				multi_end = "\\*\\/"
 
-			#rg = re.compile("\\/\\*.*\\*\\/\n\\s*|(\\/\\*(.*\n)+.*\\*\\/)|\\/\\/.+\n\\s*")
-			region = self.view.find(r'\/\*.*\*\/\n\s*|(\/\*(.*\n)+.*\*\/)|\/\/.+\n\s*', 0)
+			#"\\/\\*.*\\*\\/\\n\\s*|(\\/\\*(.*\\n)+.*\\*\\/)|\\/\\/.+\\n\\s*"
+			rg = "{0}.*{1}\\n\\s*|({0}(.*\\n)+.*{1})|{2}.+\\n\\s*".format(multi_start, multi_end, single)
+			print(rg)
+			region = self.view.find(rg, 0)
 			if region.empty():
 				break
 			self.view.erase(edit, region)
 			
-
-			
-
