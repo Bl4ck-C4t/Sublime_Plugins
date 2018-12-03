@@ -5,7 +5,7 @@ import re
 
 class CommentdeleterCommand(sublime_plugin.TextCommand):
 	def regex_compiler(self, multi_start, multi_end, single):
-		single_r = "|{0}.+\\n\\s*".format(single)
+		single_r = "|{0}.*\\n\\s*".format(single)
 		single_multi = "{0}.*{1}\\n\\s*".format(multi_start, multi_end)
 		multi_full = "({0}(.*\\n)+.*{1})".format(multi_start, multi_end)
 		if single is None:
