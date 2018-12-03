@@ -14,7 +14,7 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 			return single_r[1:]
 		return "{}|{}{}".format(single_multi, multi_full, single_r)
 			
-	def run(self, edit):
+	def run(self, edit, files=[]):
 		while True: #\/\*.*\*\/\n\s*|(\/\*(.*\n)+.*\*\/)|\/\/.+\n\s*
 			name = self.view.file_name()
 			name = path.split(name)
