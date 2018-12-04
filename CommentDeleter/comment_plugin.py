@@ -5,8 +5,8 @@ import re
 
 class CommentdeleterCommand(sublime_plugin.TextCommand):
 	def regex_compiler(self, multi_start, multi_end, single):
-		single_r = "|{0}.*\\n?".format(single)
-		multi_full = "({0}(.*\\n)*?.*{1}\\n?)".format(multi_start, multi_end)
+		single_r = "|(?<!['\"]){0}.*\\n?".format(single)
+		multi_full = "((?<!['\"]){0}(.*\\n)*?.*{1}\\n?)".format(multi_start, multi_end)
 		if single is None:
 			single = ""
 		if multi_start == None and multi_end == None:
@@ -40,16 +40,19 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 			#print("COM:", self.view.substr(region))
 			line = self.view.line(region.a)
 			part = sublime.Region(line.a, region.a)
+			part2 = sublime.Region(region.b, line.b)
 			s_part = self.view.substr(part)	
 			if not(part.empty()):
 				if not(s_part.isspace()):
 					region.b = line.b
 
-			
+			has_space_after = self.view.substr(part2).isspace()
+			#print(has_space_after)
 			self.view.erase(edit, region)
-
-			if s_part.isspace():
+			
+			if s_part.isspace() and has_space_after:
 				self.view.erase(edit, part)
+				#print("Double erase")
 
 			if one_delete:
 				break
