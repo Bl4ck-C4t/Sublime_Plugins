@@ -8,6 +8,6 @@
 { 
 	"keys": ["ctrl+alt+k"],
 	"command": "commentdeleter",
-	"args": {"one_delete":"True"}
+	"args": {"one_delete":"True", "from_cursor_pos":"True"}
 }
 ]

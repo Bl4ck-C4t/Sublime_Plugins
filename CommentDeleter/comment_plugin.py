@@ -15,7 +15,8 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 		#return "(\\/\\*(.*\\n)*.*\\*\\/)|\\/\\/.+\\n\\s*"
 		return "{}{}".format(multi_full, single_r)
 			
-	def run(self, edit, one_delete=False, files=[]):
+	def run(self, edit, one_delete=False, from_cursor_pos=False, files=[]):
+		start_pos = self.view.sel()[0].begin() if from_cursor_pos else 0
 		name = self.view.file_name()
 		name = path.split(name)
 		ext = name[1].split(".")[1]
@@ -29,7 +30,7 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 			rg = self.regex_compiler("<!--", "-->", None)
 		if ext == "css":
 			rg = self.regex_compiler("\\/\\*", "\\*\\/", None)
-		print("New Call")
+		#print("New Call")
 		while True: #\/\*.*\*\/\n\s*|(\/\*(.*\n)+.*\*\/)|\/\/.+\n\s*
 			
 
@@ -37,10 +38,10 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 			#"\\/\\*.*\\*\\/\\n\\s*|(\\/\\*(.*\\n)+.*\\*\\/)|\\/\\/.+\\n\\s*"
 			#print(rg)
 
-			region = self.view.find(rg, 0)
+			region = self.view.find(rg, start_pos)
 			if region.empty():
 				break
-			print("COM:", self.view.substr(region))
+			#print("COM:", self.view.substr(region))
 			line = self.view.line(region.a)
 			part = sublime.Region(line.a, region.a)
 			if not(part.empty()):
