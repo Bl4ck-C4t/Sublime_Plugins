@@ -1,0 +1,4 @@
+[
+  { "caption": "Remove Coments", "command": "commentdeleter", "args": {"files": []} }
+
+]
