@@ -1,7 +1,6 @@
 import sublime
 import sublime_plugin
 from os import path
-import re
 
 class CommentdeleterCommand(sublime_plugin.TextCommand):
 	def regex_compiler(self, multi_start, multi_end, single):
@@ -28,16 +27,13 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 			rg = self.regex_compiler("<!--", "-->", None)
 		if ext == "css":
 			rg = self.regex_compiler("\\/\\*", "\\*\\/", None)
-		#print("New Call")
-		while True: #\/\*.*\*\/\n\s*|(\/\*(.*\n)+.*\*\/)|\/\/.+\n\s*
+		removed=0
+		while True: 
 
-			#"\\/\\*.*\\*\\/\\n\\s*|(\\/\\*(.*\\n)+.*\\*\\/)|\\/\\/.+\\n\\s*"
-			#print(rg)
 
 			region = self.view.find(rg, start_pos)
 			if region.empty():
 				break
-			#print("COM:", self.view.substr(region))
 			line = self.view.line(region.a)
 			part = sublime.Region(line.a, region.a)
 			part2 = sublime.Region(region.b, line.b)
@@ -47,13 +43,13 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 					region.b = line.b
 
 			has_space_after = self.view.substr(part2).isspace()
-			#print(has_space_after)
 			self.view.erase(edit, region)
 			
 			if s_part.isspace() and has_space_after:
 				self.view.erase(edit, part)
-				#print("Double erase")
-
-			if one_delete:
+			removed+=1
+			if one_delete or removed >= 600:
 				break
+			
+		print("Removed {} comment{}.".format(removed, "s" if removed > 1 else ""))
 			
