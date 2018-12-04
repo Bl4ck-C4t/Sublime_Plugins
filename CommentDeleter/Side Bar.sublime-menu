@@ -1,4 +1,4 @@
 [
-  { "caption": "Remove Coments", "command": "commentdeleter", "args": {"files": []} }
+  { "caption": "Remove Comments", "command": "commentdeleter", "args": {"files": []} }
 
 ]
