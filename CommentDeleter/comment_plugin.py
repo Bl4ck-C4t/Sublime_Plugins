@@ -3,8 +3,8 @@ import sublime_plugin
 from os import path
 
 
-
-class CommentDeleterCommand(sublime_plugin.TextCommand):
+class Comment:
+	types = []
 	def regex_compiler(self, multi_start, multi_end, single):
 		single_r = "|(?<!['\"]){0}.*\\n?".format(single)
 		multi_full = "((?<!['\"]){0}(.*\\n)*?.*{1}\\n?)".format(multi_start, multi_end)
@@ -13,30 +13,37 @@ class CommentDeleterCommand(sublime_plugin.TextCommand):
 		if multi_start == None and multi_end == None:
 			return single_r[1:]
 		return "{}{}".format(multi_full, single_r)
+
+	def __init__(self, multi_start, multi_end, single, ext):
+		self.ext = ext
+		self.regex = self.regex_compiler(multi_start, multi_end, single)
+		self.types.append(self)
+
+
+class CommentDeleterCommand(sublime_plugin.TextCommand):
+	
 			
-	def next_comment(self):
+	def build_comment(self):
 		name = self.view.file_name()
 		name = path.split(name)
 		ext = name[1].split(".")[1]
-		if ext in ["c", "cpp", "csharp"]:
-			rg = self.regex_compiler("\\/\\*", "\\*\\/", "\\/\\/")
-		if ext == "py":
-			rg = self.regex_compiler(None, None, "#")
-		if ext == "rb":
-			rg = self.regex_compiler("=start", "=end", "#")
-		if ext == "html":
-			rg = self.regex_compiler("<!--", "-->", None)
-		if ext == "css":
-			rg = self.regex_compiler("\\/\\*", "\\*\\/", None)
-		return rg
+		comments = [x for x in Comment.types if ext in x.ext]
+		if len(comments) == 0:
+			raise Exception("Extension '.{}' not supported.".format(ext))
+		return comments[0]
 		
 
 	def run(self, edit, one_delete=False, from_cursor_pos=False, files=[]):
 		start_pos = self.view.sel()[0].begin() if from_cursor_pos else 0
 		removed=0
+		Comment("\\/\\*", "\\*\\/", "\\/\\/", ["c", "cpp", "csharp", "rs"])
+		Comment(None, None, "#", ["py"])
+		Comment("=start", "=end", "#", ["rb"])
+		Comment("<!--", "-->", None, ["html"])
+		Comment("\\/\\*", "\\*\\/", None, ["css"])
+		comment = self.build_comment()
 		while True:
-			rg = self.next_comment() 
-			region = self.view.find(rg, start_pos)
+			region = self.view.find(comment.regex, start_pos)
 			if region.empty():
 				break
 			line = self.view.line(region.a)
