@@ -37,15 +37,18 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 			line = self.view.line(region.a)
 			part = sublime.Region(line.a, region.a)
 			part2 = sublime.Region(region.b, line.b)
-			s_part = self.view.substr(part)	
+			s_before = self.view.substr(part)	
+			s_after = self.view.substr(part2)
+			clear_space = False
 			if not(part.empty()):
-				if not(s_part.isspace()):
+				if s_before.isspace() and s_after.isspace():
+					clear_space = True
+				elif not(s_before.isspace()):
 					region.b = line.b
 
-			has_space_after = self.view.substr(part2).isspace()
 			self.view.erase(edit, region)
 			
-			if s_part.isspace() and has_space_after:
+			if clear_space:
 				self.view.erase(edit, part)
 			removed+=1
 			if one_delete or removed >= 600:
