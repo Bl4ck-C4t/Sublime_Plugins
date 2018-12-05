@@ -16,7 +16,7 @@
 				{
 					"caption" : "Remove next comment",
 					"command" : "comment_deleter",
-					"args" : {"one_delete":"True", "from_cursor_pos":"True"}
+					"args" : {"one_delete":true, "from_cursor_pos":true}
 
 				}
 			]
