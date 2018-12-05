@@ -1,13 +1,13 @@
 [
 { 
 	"keys": ["ctrl+shift+k"],
-	"command": "commentdeleter",
+	"command": "comment_deleter",
 	//"args": {"one_delete":"True"}
 },
 
 { 
 	"keys": ["ctrl+alt+k"],
-	"command": "commentdeleter",
+	"command": "comment_deleter",
 	"args": {"one_delete":"True", "from_cursor_pos":"True"}
 }
 ]

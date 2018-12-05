@@ -1,3 +1,26 @@
 [
+{
+	"id":"edit",
+	"children":
+    [
+		{
+			"id":"comment",
+			"children":
+			[
+				{
+					"caption" : "Delete Comments",
+					"command" : "comment_deleter"
 
+				},
+
+				{
+					"caption" : "Remove next comment",
+					"command" : "comment_deleter",
+					"args" : {"one_delete":"True", "from_cursor_pos":"True"}
+
+				}
+			]
+		}
+    ]
+}
 ]

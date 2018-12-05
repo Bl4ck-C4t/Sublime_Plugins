@@ -2,7 +2,9 @@ import sublime
 import sublime_plugin
 from os import path
 
-class CommentdeleterCommand(sublime_plugin.TextCommand):
+
+
+class CommentDeleterCommand(sublime_plugin.TextCommand):
 	def regex_compiler(self, multi_start, multi_end, single):
 		single_r = "|(?<!['\"]){0}.*\\n?".format(single)
 		multi_full = "((?<!['\"]){0}(.*\\n)*?.*{1}\\n?)".format(multi_start, multi_end)
@@ -12,8 +14,7 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 			return single_r[1:]
 		return "{}{}".format(multi_full, single_r)
 			
-	def run(self, edit, one_delete=False, from_cursor_pos=False, files=[]):
-		start_pos = self.view.sel()[0].begin() if from_cursor_pos else 0
+	def next_comment(self):
 		name = self.view.file_name()
 		name = path.split(name)
 		ext = name[1].split(".")[1]
@@ -27,10 +28,14 @@ class CommentdeleterCommand(sublime_plugin.TextCommand):
 			rg = self.regex_compiler("<!--", "-->", None)
 		if ext == "css":
 			rg = self.regex_compiler("\\/\\*", "\\*\\/", None)
+		return rg
+		
+
+	def run(self, edit, one_delete=False, from_cursor_pos=False, files=[]):
+		start_pos = self.view.sel()[0].begin() if from_cursor_pos else 0
 		removed=0
-		while True: 
-
-
+		while True:
+			rg = self.next_comment() 
 			region = self.view.find(rg, start_pos)
 			if region.empty():
 				break
