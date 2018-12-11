@@ -30,6 +30,11 @@ Comment(None, None, "%", ["prolog"])
 Comment(None, None, "--", ["hs"])
 
 
+def inComment(strings, region):
+	return any(filter(lambda x: x.contains(region.a), strings))
+
+
+
 class CommentDeleterCommand(sublime_plugin.TextCommand):
 	
 			
@@ -46,15 +51,16 @@ class CommentDeleterCommand(sublime_plugin.TextCommand):
 		
 
 	def run(self, edit, one_delete=False, from_cursor_pos=False, files=[]):
+		
 		start_pos = self.view.sel()[0].begin() if from_cursor_pos else 0
 		removed=0
 		comment = self.build_comment()
 		while True:
+			strings = self.view.find_all(r'(["\']).*\1', 0)
 			region = self.view.find(comment.regex, start_pos)
 			if region.empty():
 				break
-			before_full = self.view.substr(sublime.Region(0, region.a))
-			if before_full.count('"') % 2 != 0 or before_full.count("'") % 2 != 0:
+			if inComment(strings, region):
 				start_pos = region.b
 				continue
 			line = self.view.line(region.a)
@@ -77,5 +83,5 @@ class CommentDeleterCommand(sublime_plugin.TextCommand):
 			if one_delete or removed >= 600:
 				break
 			
-		print("Removed {} comment{}.".format(removed, "s" if removed > 1 else ""))# za domashno da si razgledame coda po OOP s unarnite prostutii, zashtoto ne go razbirame i mi e sloshen
+		print("Removed {} comment{}.".format(removed, "s" if removed > 1 else ""))
 			
