@@ -5,6 +5,7 @@ from os import path
 
 class Comment:
 	types = []
+
 	def regex_compiler(self, multi_start, multi_end, single):
 		single_r = "|(?<!['\"]){0}.*\\n?".format(single)
 		multi_full = "((?<!['\"]){0}(.*\\n)*?.*{1}\\n?)".format(multi_start, multi_end)
@@ -29,10 +30,8 @@ Comment(None, None, ";;", ["clj"])
 Comment(None, None, "%", ["prolog"])
 Comment(None, None, "--", ["hs"])
 
-
 def inComment(strings, region):
-	return any(filter(lambda x: x.contains(region.a), strings))
-
+	return list(filter(lambda x: x.contains(region.a), strings))
 
 
 class CommentDeleterCommand(sublime_plugin.TextCommand):
@@ -51,7 +50,6 @@ class CommentDeleterCommand(sublime_plugin.TextCommand):
 		
 
 	def run(self, edit, one_delete=False, from_cursor_pos=False, files=[]):
-		
 		start_pos = self.view.sel()[0].begin() if from_cursor_pos else 0
 		removed=0
 		comment = self.build_comment()
@@ -60,8 +58,9 @@ class CommentDeleterCommand(sublime_plugin.TextCommand):
 			region = self.view.find(comment.regex, start_pos)
 			if region.empty():
 				break
-			if inComment(strings, region):
-				start_pos = region.b
+			res = inComment(strings, region)
+			if any(res):
+				start_pos = res[0].b
 				continue
 			line = self.view.line(region.a)
 			part = sublime.Region(line.a, region.a)
