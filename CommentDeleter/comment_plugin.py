@@ -24,6 +24,11 @@ Comment(None, None, "#", ["py"])
 Comment("=start", "=end", "#", ["rb"])
 Comment("<!--", "-->", None, ["html"])
 Comment("\\/\\*", "\\*\\/", None, ["css"])
+Comment(None, None, ";", ["scm", "asm"])
+Comment(None, None, ";;", ["clj"])
+Comment(None, None, "%", ["prolog"])
+Comment(None, None, "--", ["hs"])
+
 
 class CommentDeleterCommand(sublime_plugin.TextCommand):
 	
