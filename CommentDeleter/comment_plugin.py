@@ -15,6 +15,12 @@ class Comment:
 			return single_r[1:]
 		return "{}{}".format(multi_full, single_r)
 
+	def find(ext):
+		for x in Comment.types:
+			if ext in x.ext:
+				return x
+		return None
+
 	def __init__(self, multi_start, multi_end, single, ext):
 		self.ext = ext
 		self.regex = self.regex_compiler(multi_start, multi_end, single)
@@ -43,19 +49,19 @@ class CommentDeleterCommand(sublime_plugin.TextCommand):
 			raise Exception("Not in a view")
 		name = path.split(name)
 		ext = name[1].split(".")[1]
-		comments = [x for x in Comment.types if ext in x.ext]
-		if len(comments) == 0:
+		comment = Comment.find(ext)
+		if comment is None:
 			raise Exception("Extension '.{}' not supported.".format(ext))
-		return comments[0]
+		return comment
 		
 
 	def run(self, edit, one_delete=False, from_cursor_pos=False, files=[]):
 		start_pos = self.view.sel()[0].begin() if from_cursor_pos else 0
 		removed=0
 		comment = self.build_comment()
-		while True:
+		regions = self.view.find_all(comment.regex, start_pos) if not(one_delete) else [self.view.find(comment.regex, start_pos)]
+		for region in regions[::-1]:
 			strings = self.view.find_all(r'(["\']).*\1', 0)
-			region = self.view.find(comment.regex, start_pos)
 			if region.empty():
 				break
 			res = inComment(strings, region)
